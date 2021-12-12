@@ -167,14 +167,24 @@
       data: {disp_type: 'end'}
     }
 
+    timeline.push({
+            type: 'fullscreen',
+            fullscreen_mode: true,
+            data: {disp_type: 'fullscreen-in'}
+        });
     timeline.push(instruction1);
     timeline.push(instruction2);
     timeline.push(target_preview);
     timeline.push(search_main1);
     timeline.push(inter_break);
     timeline.push(target_preview);
-    timeline.push(search_main2);
+    // timeline.push(search_main2);
     timeline.push(save_data);
+    timeline.push({
+            type: 'fullscreen',
+            fullscreen_mode: false,
+            data: {disp_type: 'fullscreen-out'}
+        });
     timeline.push(end_session);
     jsPsych.init({
         timeline: timeline,           
