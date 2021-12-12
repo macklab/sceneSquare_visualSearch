@@ -32,7 +32,7 @@
     var cond_list = factorial_noRandom(factors);
     var target_coord = '0_0';
     var jitter = [-1,0,1];
-    var n_block = 4;
+    var n_block = 2;
     var exp_cond = make_condition(cond_list, jitter, target_coord, n_block);
 
     // stimulus preloading
@@ -88,8 +88,8 @@
       target_present_key: 'd',
       target_absent_key: 'k',
       target_present: jsPsych.timelineVariable('target_ox'),
-      target_size: [75,75],
-      circle_diameter: 300,
+      target_size: [85,85],
+      circle_diameter: 350,
       fixation_duration: 1000,
       data: {
         config_type: jsPsych.timelineVariable('type'),        
@@ -109,23 +109,11 @@
 
     var inter_break = {
       type: 'html-keyboard-response',
-      stimulus: '<p style="font-size: 48px;">Take a short break and press "B" to resume.'+
-        'You will see the target once again and then start seaching.</p>',
+      stimulus: '<p style="font-size: 24px;">Take a short break and press "B" to resume.<br>'+
+        'You will see the target once again and then start searching.</p>',
       choices: ['b'],
       data: {disp_type: 'break'}
-    }
-
-    var inter_break = {
-      type: 'image-keyboard-response',
-      stimulus: 'stimuli/bedroom5_ver4/000312.webp',
-      choices: ['b'],
-      data: {disp_type: 'break'},
-      prompt: "<p>The above image is the target scene you will search for among foil scenes.<br>"+
-        "Those foils can be very similar to the target.<br>"+
-        "So, carefully look at this scene and try to remember it precisely.<br><br>"+
-        "In the task, press 'D' if the target is present, or press 'K' if the target is absent.<br>"+
-        "Once you are ready to start, press the 'B' key.</p>"
-    };
+    }    
 
     // * save data * //
     var save_data = {
@@ -161,7 +149,7 @@
     // end session
     var end_session = {
       type: 'html-keyboard-response',
-      stimulus: '<p style="font-size: 48px;">Thanks for participating! You can leave this page.</p>',
+      stimulus: '<p style="font-size: 24px;">Thanks for participating! You can leave this page.</p>',
       choices: jsPsych.NO_KEYS,
       trial_duration: 1000,
       data: {disp_type: 'end'}
@@ -178,7 +166,12 @@
     timeline.push(search_main1);
     timeline.push(inter_break);
     timeline.push(target_preview);
-    // timeline.push(search_main2);
+    timeline.push(search_main2);
+    timeline.push(target_preview);
+    timeline.push(search_main1);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main2);
     timeline.push(save_data);
     timeline.push({
             type: 'fullscreen',
