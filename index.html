@@ -32,7 +32,7 @@
     var cond_list = factorial_noRandom(factors);
     var target_coord = '0_0';
     var jitter = [-1,0,1];
-    var n_block = 2;
+    var n_block = 4;
     var exp_cond = make_condition(cond_list, jitter, target_coord, n_block);
 
     // stimulus preloading
@@ -167,11 +167,24 @@
     timeline.push(inter_break);
     timeline.push(target_preview);
     timeline.push(search_main2);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main3);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main4);
+    timeline.push(inter_break);
     timeline.push(target_preview);
     timeline.push(search_main1);
     timeline.push(inter_break);
     timeline.push(target_preview);
     timeline.push(search_main2);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main3);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main4);
     timeline.push(save_data);
     timeline.push({
             type: 'fullscreen',
