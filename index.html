@@ -33,13 +33,13 @@
     var target_coord = '0_0';
     var jitter = [-1,0,1];
     var n_block = 4;
-    var exp_cond = make_condition(cond_list, jitter, target_coord, n_block);
+    var stim_dir = 'stimuli/bedroom11_ver4_d0.5/'
+    var exp_cond = make_condition(cond_list, jitter, target_coord, n_block, stim_dir);
 
     // stimulus preloading
-    var preload_images = [];    
-    var space_path = 'stimuli/bedroom11_ver4_d0.5';
+    var preload_images = []; 
     for (i=0; i<625; i++){
-        preload_images.push(space_path+('000000'+i).slice(-6)+'.webp');
+        preload_images.push(stim_dir+('000000'+i).slice(-6)+'.webp');
     }
   
 
@@ -76,7 +76,7 @@
 
     var target_preview = {
       type: 'image-keyboard-response',
-      stimulus: 'stimuli/bedroom5_ver4/000312.webp',
+      stimulus: stim_dir+'000312.webp',
       choices: ['b'],
       data: {disp_type: 'target_preview'},
       prompt: "<p>The above image is the target scene you will search for among foil scenes.<br>"+

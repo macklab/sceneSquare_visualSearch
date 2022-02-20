@@ -1,4 +1,4 @@
-function make_condition(cond_list, jitter, target_coord, n_block) {
+function make_condition(cond_list, jitter, target_coord, n_block, stim_dir) {
 
     // prepare the base cell coord
     var cell_coord = [];  
@@ -17,8 +17,7 @@ function make_condition(cond_list, jitter, target_coord, n_block) {
             var target_path = [];
         }else{
             var target = target_coord;
-            var target_path = 'stimuli/bedroom5_ver4/'+
-            ('000000'+cell_coord.indexOf(target)).slice(-6)+'.webp';
+            var target_path = stim_dir+('000000'+cell_coord.indexOf(target)).slice(-6)+'.webp';
         }
         // get foil coords
         var distance = Math.round(Math.sqrt(cond_list[i].dist*cond_list[i].dist/2));
@@ -44,7 +43,7 @@ function make_condition(cond_list, jitter, target_coord, n_block) {
             target_path: target_path,
             nts: nt_coords,
             nt_path: _.map(nt_coords, function(x){
-                var y='stimuli/bedroom5_ver4/'+('000000'+cell_coord.indexOf(x)).slice(-6)+'.webp';
+                var y=stim_dir+('000000'+cell_coord.indexOf(x)).slice(-6)+'.webp';
                 return y;})
         })
     }
@@ -58,8 +57,7 @@ function make_condition(cond_list, jitter, target_coord, n_block) {
             var target_path = [];
         }else{
             var target = target_coord;
-            var target_path = 'stimuli/bedroom5_ver4/'+
-            ('000000'+cell_coord.indexOf(target)).slice(-6)+'.webp';
+            var target_path = stim_dir+('000000'+cell_coord.indexOf(target)).slice(-6)+'.webp';
         }
         // get foil coords
         var distance = Math.round(Math.sqrt(cond_list[i].dist*cond_list[i].dist/2));
@@ -89,7 +87,7 @@ function make_condition(cond_list, jitter, target_coord, n_block) {
             target_path: target_path,
             nts: nt_coords,
             nt_path: _.map(nt_coords, function(x){
-                var y='stimuli/bedroom5_ver4/'+('000000'+cell_coord.indexOf(x)).slice(-6)+'.webp';
+                var y=stim_dir+('000000'+cell_coord.indexOf(x)).slice(-6)+'.webp';
                 return y;})
         })
     }
@@ -103,8 +101,7 @@ function make_condition(cond_list, jitter, target_coord, n_block) {
             var target_path = [];
         }else{
             var target = target_coord;
-            var target_path = 'stimuli/bedroom5_ver4/'+
-            ('000000'+cell_coord.indexOf(target)).slice(-6)+'.webp';
+            var target_path = stim_dir+('000000'+cell_coord.indexOf(target)).slice(-6)+'.webp';
         }
         // get foil coords
         var distance = cond_list[i].dist;
@@ -134,7 +131,7 @@ function make_condition(cond_list, jitter, target_coord, n_block) {
             target_path: target_path,
             nts: nt_coords,
             nt_path: _.map(nt_coords, function(x){
-                var y='stimuli/bedroom5_ver4/'+('000000'+cell_coord.indexOf(x)).slice(-6)+'.webp';
+                var y=stim_dir+('000000'+cell_coord.indexOf(x)).slice(-6)+'.webp';
                 return y;})
         })
     }
@@ -148,8 +145,7 @@ function make_condition(cond_list, jitter, target_coord, n_block) {
             var target_path = [];
         }else{
             var target = target_coord;
-            var target_path = 'stimuli/bedroom5_ver4/'+
-            ('000000'+cell_coord.indexOf(target)).slice(-6)+'.webp';
+            var target_path = stim_dir+('000000'+cell_coord.indexOf(target)).slice(-6)+'.webp';
         }
         // get foil coords
         var distance = Math.round(Math.sqrt(cond_list[i].dist*cond_list[i].dist/2));
@@ -179,7 +175,7 @@ function make_condition(cond_list, jitter, target_coord, n_block) {
             target_path: target_path,
             nts: nt_coords,
             nt_path: _.map(nt_coords, function(x){
-                var y='stimuli/bedroom5_ver4/'+('000000'+cell_coord.indexOf(x)).slice(-6)+'.webp';
+                var y=stim_dir+('000000'+cell_coord.indexOf(x)).slice(-6)+'.webp';
                 return y;})
         })
     }
