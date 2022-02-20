@@ -37,7 +37,7 @@
 
     // stimulus preloading
     var preload_images = [];    
-    var space_path = 'stimuli/bedroom5_ver4';
+    var space_path = 'stimuli/bedroom11_ver4_d0.5';
     for (i=0; i<625; i++){
         preload_images.push(space_path+('000000'+i).slice(-6)+'.webp');
     }
@@ -45,6 +45,20 @@
 
     // exp
     var timeline=[];
+
+    // * consent form * //
+    var consent_page = {
+      type: 'html-button-response',
+      stimulus: function(){                            
+          var html = 
+          '<p area-selected="font-size:15px;"> Press Agree to participate in the experiment.</p>'+                          
+          '<embed src="stimuli/consent_online_credit.pdf" style="width:80vw; height:70vh;"></embed>'
+          return html;
+      },
+      choices: ['Agree'],        
+      data: {disp_type: 'consent_page'}   
+
+    }
 
     var instruction1 = {
       type: 'html-button-response',
@@ -156,10 +170,11 @@
     }
 
     timeline.push({
-            type: 'fullscreen',
-            fullscreen_mode: true,
-            data: {disp_type: 'fullscreen-in'}
-        });
+        type: 'fullscreen',
+        fullscreen_mode: true,
+        data: {disp_type: 'fullscreen-in'}
+    });
+    timeline.push(consent_page);        
     timeline.push(instruction1);
     timeline.push(instruction2);
     timeline.push(target_preview);
