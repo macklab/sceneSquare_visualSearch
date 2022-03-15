@@ -1,4 +1,4 @@
-function make_condition(cond_list, jitter, target_coord, n_block, stim_dir) {
+function make_condition(cond_list, jitter, target_coord, n_block, stim_dir, position_idx) {
 
     // prepare the base cell coord
     var cell_coord = [];  
@@ -36,6 +36,7 @@ function make_condition(cond_list, jitter, target_coord, n_block, stim_dir) {
         oneDim_ftr.push({
             type:'oneDim-feature',
             set_size: cond_list[i].set_size,
+            stim_position: _.sample(position_idx, cond_list[i].set_size),
             target_ox: cond_list[i].target_ox,
             dimension: cond_list[i].dimension,
             direction: cond_list[i].direction,
@@ -80,6 +81,7 @@ function make_condition(cond_list, jitter, target_coord, n_block, stim_dir) {
         twoDim_ftr.push({
             type:'twoDim-feature',
             set_size: cond_list[i].set_size,
+            stim_position: _.sample(position_idx, cond_list[i].set_size),
             target_ox: cond_list[i].target_ox,
             dimension: cond_list[i].dimension,
             direction: cond_list[i].direction,
@@ -124,6 +126,7 @@ function make_condition(cond_list, jitter, target_coord, n_block, stim_dir) {
         twoDim_cnj.push({
             type:'twoDim-conjunction',
             set_size: cond_list[i].set_size,
+            stim_position: _.sample(position_idx, cond_list[i].set_size),
             target_ox: cond_list[i].target_ox,
             dimension: cond_list[i].dimension,
             direction: cond_list[i].direction,
@@ -168,6 +171,7 @@ function make_condition(cond_list, jitter, target_coord, n_block, stim_dir) {
         twoDim_dgn.push({
             type:'twoDim-diagnoal',
             set_size: cond_list[i].set_size,
+            stim_position: _.sample(position_idx, cond_list[i].set_size),
             target_ox: cond_list[i].target_ox,
             dimension: cond_list[i].dimension,
             direction: cond_list[i].direction,

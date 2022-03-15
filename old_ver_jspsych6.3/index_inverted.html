@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src='jspsych-6.3.1/jspsych.js'></script>
+        <script src="jquery-3.6.0.min.js"></script>        
+        <script src="https://cdn.jsdelivr.net/npm/bowser@2.5.3/es5.min.js"></script>   
+        <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.0/underscore-umd-min.js"></script>                    
+        <script src="jspsych-6.3.1/plugins/jspsych-fullscreen.js"></script>
+        <script src="jspsych-6.3.1/plugins/jspsych-instructions.js"></script>    
+        <script src='jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js'></script>
+        <script src='jspsych-6.3.1/plugins/jspsych-visual-search-circle-inverted.js'></script>
+        <script src='jspsych-6.3.1/plugins/jspsych-html-button-response.js'></script>
+        <script src='jspsych-6.3.1/plugins/jspsych-image-button-response.js'></script>
+        <script src='jspsych-6.3.1/plugins/jspsych-image-keyboard-response.js'></script>        
+        <script src="jspsych-6.3.1/plugins/jspsych-external-html.js"></script>       
+        <script src='factorial_noRandom.js'></script>   
+        <script src="make_condition.js"></script>      
+        <link href='jspsych-6.3.1/css/jspsych.css' rel='stylesheet' type="text/css">
+        
+  </head>
+  <body></body>
+  <script>
+    // condition   
+    var factors = {
+      dist: [11],
+      set_size: [3,4,6,8],
+      target_ox: [0,1], // 0=target absent, 1=target present
+      dimension: [-1,1],
+      direction: [-1,1]
+    }
+    var cond_list = factorial_noRandom(factors);
+    var target_coord = '0_0';
+    var jitter = [-1,0,1];
+    var n_block = 4;
+    var exp_cond = make_condition(cond_list, jitter, target_coord, n_block);
+
+    // stimulus preloading
+    var preload_images = [];    
+    var space_path = 'stimuli/bedroom5_ver4';
+    for (i=0; i<625; i++){
+        preload_images.push(space_path+('000000'+i).slice(-6)+'.webp');
+    }
+  
+
+    // exp
+    var timeline=[];
+
+    var instruction1 = {
+      type: 'html-button-response',
+      stimulus: html='<img src="stimuli/instruction/inverted_p1_welcome.png" style="height:600px">',
+      choices: ['Go to procedure'],
+      data: {disp_type: 'inst_welcome'}
+    }
+
+    var instruction2 = {
+      type: 'html-button-response',
+      stimulus: html='<img src="stimuli/instruction/inverted_p2_procedure.png" style="height:600px">',
+      choices: ['Preview target'],
+      data: {disp_type: 'inst_procedure'}
+    }
+
+    var target_preview = {
+      type: 'html-keyboard-response',
+      stimulus: '<img src="stimuli/bedroom5_ver4/000312.webp" style="transform:rotate(180deg);"',
+      choices: ['b'],
+      data: {disp_type: 'target_preview'},
+      prompt: "<p>The above image is the target scene you will search for among foil scenes.<br>"+
+        "Those foils can be very similar to the target.<br>"+
+        "So, carefully look at this scene and try to remember it precisely.<br><br>"+
+        "In the task, press 'D' if the target is present, or press 'K' if the target is absent.<br>"+
+        "Once you are ready to start, press the 'B' key.</p>"
+    }
+
+    var fixation_cross = { 
+      type: 'html-keyboard-response',
+      stimulus: '<p style="font-size: 32px;">+</p>',
+      choices: jsPsych.NO_KEYS,
+      trial_duration: 1000,
+      data: {disp_type: 'fixation'}
+    };
+    var search_array = {
+      type: 'visual-search-circle-inverted',
+      target: jsPsych.timelineVariable('target_path'),
+      foil: jsPsych.timelineVariable('nt_path'),
+      set_size: jsPsych.timelineVariable('set_size'),
+      fixation_image: 'stimuli/fix_cross.png',
+      target_present_key: 'd',
+      target_absent_key: 'k',
+      target_present: jsPsych.timelineVariable('target_ox'),
+      target_size: [85,85],
+      circle_diameter: 350,
+      fixation_duration: 1000,
+      data: {
+        config_type: jsPsych.timelineVariable('type'),        
+        config_dir: jsPsych.timelineVariable('direction'),
+        config_dim: jsPsych.timelineVariable('dimension'),
+        disp_type: 'search_array'
+      }
+
+    };
+
+    for(r=0; r<n_block; r++){
+      this['search_main'+(r+1)] = {
+        timeline: [search_array],
+        timeline_variables: exp_cond[r],
+      }
+    };
+
+    var inter_break = {
+      type: 'html-keyboard-response',
+      stimulus: '<p style="font-size: 24px;">Take a short break and press "B" to resume.<br>'+
+        'You will see the target once again and then start searching.</p>',
+      choices: ['b'],
+      data: {disp_type: 'break'}
+    }    
+
+    // * save data * //
+    var save_data = {
+      type: 'html-keyboard-response',
+      stimulus: '<p>You are done! Now we are saving your data. Do not leave this page yet.</p>',
+      choices: jsPsych.NO_KEYS,
+      trial_duration: 3000,
+      data: { // random rotation angle saving                
+          disp_type: 'saving_display'
+      },            
+      on_finish: function(){                
+          // get data values
+          var data = {experiment:"sceneSquare_visualSearch",
+                      repo:"sceneSquare_visualSearch",                          
+                      data:jsPsych.data.get().values(),                            
+                      interaction_data:jsPsych.data.getInteractionData().values()
+                  }
+
+          // send data to savejs
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
+          xhr.setRequestHeader('Content-Type','application/json');
+          xhr.onload = function(){
+            if(xhr.status==200){
+              var response=JSON.parse(xhr.responseText);
+              console.log(response.success);
+            }
+          };
+          xhr.send(JSON.stringify(data));                              
+      }           
+    }
+
+    // end session
+    var end_session = {
+      type: 'html-keyboard-response',
+      stimulus: '<p style="font-size: 24px;">Thanks for participating! You can leave this page.</p>',
+      choices: jsPsych.NO_KEYS,
+      trial_duration: 1000,
+      data: {disp_type: 'end'}
+    }
+
+    timeline.push({
+            type: 'fullscreen',
+            fullscreen_mode: true,
+            data: {disp_type: 'fullscreen-in'}
+        });
+    timeline.push(instruction1);
+    timeline.push(instruction2);
+    timeline.push(target_preview);
+    timeline.push(search_main1);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main2);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main3);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main4);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main1);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main2);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main3);
+    timeline.push(inter_break);
+    timeline.push(target_preview);
+    timeline.push(search_main4);
+    timeline.push(save_data);
+    timeline.push({
+            type: 'fullscreen',
+            fullscreen_mode: false,
+            data: {disp_type: 'fullscreen-out'}
+        });
+    timeline.push(end_session);
+    jsPsych.init({
+        timeline: timeline,           
+        preload_images: preload_images                     
+        
+    });      
+    
+
+
+  </script>
+</html>
+
