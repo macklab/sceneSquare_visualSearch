@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.0"></script>
     <link href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css" rel="stylesheet" type="text/css" />
     <script src="factorial_noRandom.js"></script>
     <script src="make_condition.js"></script>
@@ -75,6 +76,16 @@
         "So, carefully look at this scene and try to remember it precisely.<br><br>"+
         "In the task, press 'Y' if the target is present, or press 'N' if the target is absent.<br>"+
         "Once you are ready to start, press 'B'.</p>"
+    }
+
+    /* preloading */
+    var image_list = [];
+    for(var i=0; i<625; i++){
+      image_list.push('stim_dir/'+("000000"+i).slice(-6)+'.webp');
+    }   
+    var preload = {
+      type: jsPsychPreload,
+      images: image_list
     }
     
     /* search trial composition */
