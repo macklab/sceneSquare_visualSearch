@@ -74,7 +74,7 @@
         "Those foils can be very similar to the target.<br>"+
         "So, carefully look at this scene and try to remember it precisely.<br><br>"+
         "In the task, press 'Y' if the target is present, or press 'N' if the target is absent.<br>"+
-        "Once you are ready to start, press the 'B' key.</p>"
+        "Once you are ready to start, press 'B'.</p>"
     }
     
     /* search trial composition */
@@ -82,7 +82,6 @@
     function img_pos(array_size, radius, stim_size, cx, cy, jitter){      
       var angles = _.range(0, 360, 360/array_size);  
       var jittered_angles = _.map(angles, function(x){return x + jitter})  
-      console.log(jittered_angles)
       var start_XYs = [];
       for (var i of jittered_angles){  
         var x = cx + (Math.cos(i/180*Math.PI)*radius);
