@@ -197,7 +197,7 @@ function make_condition(cond_list, jitter, target_coord, n_block, stim_dir, posi
     var condition = [];
     for(b=0; b<n_block; b++){
         condition.push(exp_cond.slice(b_len*b, b_len*(b+1)));
-    };
+    };    
 
     return condition;
 }
