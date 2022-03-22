@@ -82,7 +82,7 @@
       choices: ['b'],
       data: {disp_type: 'target_preview'},
       prompt: "<p>The above image is the target scene you will search for among foil scenes.<br>"+
-        "Those foils can be very similar to the target.<br>"+
+        "The foils can be very similar to the target.<br>"+
         "So, carefully look at this scene and try to remember it precisely.<br><br>"+
         "In the task, press 'Y' if the target is present, or press 'N' if the target is absent.<br>"+
         "Once you are ready to start, press 'B'.</p>"
@@ -165,9 +165,11 @@
       background_color: '#ffffff',
       trial_duration: 10000,
       data: {
+        target_present: jsPsych.timelineVariable('target_ox'),
         config_type: jsPsych.timelineVariable('type'),        
         config_dir: jsPsych.timelineVariable('direction'),
         config_dim: jsPsych.timelineVariable('dimension'),
+        set_size: jsPsych.timelineVariable('set_size'),
         disp_type: 'search_array'
       }
     }
