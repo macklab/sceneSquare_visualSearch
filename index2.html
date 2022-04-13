@@ -34,7 +34,7 @@
     var target_coord = '0_0';
     var jitter = [-1,0,1];
     var n_block = 4;
-    var stim_dir = 'stimuli/bedroom5_ver4/'
+    var stim_dir = 'stimuli/inverted_bedroom5/'
     var position_idx = _.range(0,_.max(factors.set_size));
     var exp_cond = make_condition(cond_list, jitter, target_coord, n_block, stim_dir, position_idx);     
 
@@ -127,7 +127,7 @@
         stim.push({
           obj_type: 'image',
           file: stim_path[i],
-          image_width: stim_size,
+          image_width: stim_size*-1,
           startX: position[stim_pos[i]][0],
           startY: position[stim_pos[i]][1]
         })
