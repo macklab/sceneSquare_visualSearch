@@ -215,10 +215,11 @@
       timeline_variables: exp_cond[_.sample([0,1,2,3])]
     }
     /* break */
-    for (var i=1; i<(n_block+1); i++){
+    var n_rounds=9;
+    for (var i=1; i<n_rounds; i++){
       this['inter_break'+i] = {
         type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<p style="font-size: 24px;">Round ${i} is just done! Now you have ${(n_block+1)-i} round(s) to go.</br>
+        stimulus: `<p style="font-size: 24px;">Round ${i} is just done! Now you have ${n_rounds-i} round(s) to go.</br>
           Take a short break and press "B" to resume.<br>
           You will see the target once again and then start searching.</p>`,
         choices: ['b'],
