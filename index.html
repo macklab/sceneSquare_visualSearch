@@ -14,7 +14,6 @@
     <script src="make_condition.js"></script>
     <script src="jspsych-psychophysics.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.2/underscore-min.js" integrity="sha512-anTuWy6G+usqNI0z/BduDtGWMZLGieuJffU89wUU7zwY/JhmDzFrfIZFA3PY7CEX4qxmn3QXRoXysk6NBh5muQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.4/html2canvas.min.js"></script>
   </head>
   <body></body>
   <script>
@@ -216,13 +215,17 @@
       timeline_variables: exp_cond[_.sample([0,1,2,3])]
     }
     /* break */
-    var inter_break = {
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: '<p style="font-size: 24px;">Take a short break and press "B" to resume.<br>'+
-        'You will see the target once again and then start searching.</p>',
-      choices: ['b'],
-      data: {disp_type: 'break'}
-    }   
+    for (var i=1; i<(n_block+1); i++){
+      this['inter_break'+i] = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `<p style="font-size: 24px;">Round ${i} is just done! Now you have ${(n_block+1)-i} round(s) to go.</br>
+          Take a short break and press "B" to resume.<br>
+          You will see the target once again and then start searching.</p>`,
+        choices: ['b'],
+        data: {disp_type: 'break'}
+      }
+    }
+    
 
     // * save data * //
     var save_data = {
@@ -316,41 +319,41 @@
         data: {disp_type: 'debriefing_page'}            
     } 
     timeline =[];
-    // timeline.push(consent_page);
-    // timeline.push(dem_info);
-    // timeline.push({
-    //     type: jsPsychFullscreen,
-    //     fullscreen_mode: true,
-    //     data: {disp_type: 'fullscreen-in'}
-    // });            
-    // timeline.push(instruction1);
-    // timeline.push(instruction2);
-    // timeline.push(target_preview);
-    // timeline.push(search_practice);
-    // timeline.push(inter_break);
-    // timeline.push(target_preview);
-    // timeline.push(search_main1);
-    // timeline.push(inter_break);
-    // timeline.push(target_preview);
-    // timeline.push(search_main2);
-    // timeline.push(inter_break);
-    // timeline.push(target_preview);
-    // timeline.push(search_main3);
-    // timeline.push(inter_break);
-    // timeline.push(target_preview);
-    // timeline.push(search_main4);
-    // timeline.push(inter_break);
-    // timeline.push(target_preview);
-    // timeline.push(search_main1);
-    // timeline.push(inter_break);
-    // timeline.push(target_preview);
-    // timeline.push(search_main2);
-    // timeline.push(inter_break);
-    // timeline.push(target_preview);
-    // timeline.push(search_main3);
-    // timeline.push(inter_break);
-    // timeline.push(target_preview);
-    // timeline.push(search_main4);
+    timeline.push(consent_page);
+    timeline.push(dem_info);
+    timeline.push({
+        type: jsPsychFullscreen,
+        fullscreen_mode: true,
+        data: {disp_type: 'fullscreen-in'}
+    });            
+    timeline.push(instruction1);
+    timeline.push(instruction2);
+    timeline.push(target_preview);
+    timeline.push(search_practice);
+    timeline.push(inter_break1);
+    timeline.push(target_preview);
+    timeline.push(search_main1);
+    timeline.push(inter_break2);
+    timeline.push(target_preview);
+    timeline.push(search_main2);
+    timeline.push(inter_break3);
+    timeline.push(target_preview);
+    timeline.push(search_main3);
+    timeline.push(inter_break4);
+    timeline.push(target_preview);
+    timeline.push(search_main4);
+    timeline.push(inter_break5);
+    timeline.push(target_preview);
+    timeline.push(search_main1);
+    timeline.push(inter_break6);
+    timeline.push(target_preview);
+    timeline.push(search_main2);
+    timeline.push(inter_break7);
+    timeline.push(target_preview);
+    timeline.push(search_main3);
+    timeline.push(inter_break8);
+    timeline.push(target_preview);
+    timeline.push(search_main4);
     timeline.push(save_data);
     timeline.push({
       type: jsPsychFullscreen,
