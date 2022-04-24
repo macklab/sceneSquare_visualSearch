@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PsychExp</title>    
+    <script src="https://unpkg.com/jspsych@7.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-html-form"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.0"></script>
+    <link href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <script src="factorial_noRandom.js"></script>
+    <script src="make_condition.js"></script>
+    <script src="jspsych-psychophysics.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.2/underscore-min.js" integrity="sha512-anTuWy6G+usqNI0z/BduDtGWMZLGieuJffU89wUU7zwY/JhmDzFrfIZFA3PY7CEX4qxmn3QXRoXysk6NBh5muQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+  <body></body>
+  <script>
+
+    const jsPsych = initJsPsych();    
+
+    /* condition */
+    var factors = {
+      dist: [11],
+      set_size: [3,4,6,8],
+      target_ox: [0,1], // 0=target absent, 1=target present
+      dimension: [-1,1],
+      direction: [-1,1]
+    }
+    var cond_list = factorial_noRandom(factors);
+    var target_coord = '0_0';
+    var jitter = [-1,0,1];
+    var n_block = 4;
+    var stim_dir = 'stimuli/bedroom5_ver4/'
+    var position_idx = _.range(0,_.max(factors.set_size));
+    var exp_cond = make_condition(cond_list, jitter, target_coord, n_block, stim_dir, position_idx);   
+    
+    // * Prolific information * //
+    var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+    var study_id = jsPsych.data.getURLVariable('STUDY_ID');
+    var session_id = jsPsych.data.getURLVariable('SESSION_ID');
+    jsPsych.data.addProperties({
+        subject_id: subject_id,
+        study_id: study_id,
+        session_id: session_id
+    });
+
+        
+    /* conset_page */
+    var consent_page = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: function(){                            
+          var html = 
+          '<p area-selected="font-size:15px;"> Press Agree to participate in the experiment.</p>'+                          
+          '<embed src="stimuli/consent_online_pay.pdf" style="width:80vw; height:70vh;"></embed>'
+          return html;
+      },
+      choices: ['Agree'],        
+      data: {disp_type: 'consent_page'}   
+    }
+
+    /* instruction */
+    var instruction1 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: html='<img src="stimuli/instruction/p1_welcome.png" style="height:600px">',
+      choices: ['Go to procedure'],
+      data: {disp_type: 'inst_welcome'}
+    }
+    var instruction2 = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: html='<img src="stimuli/instruction/p2_procedure.png" style="height:600px">',
+      choices: ['Preview target'],
+      data: {disp_type: 'inst_procedure'}
+    }
+
+    var target_preview = {
+      type: jsPsychImageKeyboardResponse,
+      stimulus: stim_dir+'000312.webp',
+      choices: ['b'],
+      data: {disp_type: 'target_preview'},
+      prompt: "<p>The above image is the target scene you will search for among foil scenes.<br>"+
+        "The foils can be very similar to the target.<br>"+
+        "So, carefully look at this scene and try to remember it precisely.<br><br>"+
+        "In the task, press 'Y' if the target is present, or press 'N' if the target is absent.<br>"+
+        "Once you are ready to start, press 'B'.</p>"
+    }
+
+    /* preloading */
+    var images = [];
+    for(var i=0; i<625; i++){
+      images.push(stim_dir+'/'+("000000"+i).slice(-6)+'.webp');
+    }   
+    var n_loaded = 0;
+    jsPsych.pluginAPI.preloadImages(images, function(){ startExperiment(); }, function(file) { updateLoadedCount(file); });
+
+    function updateLoadedCount(file){
+      n_loaded++;
+      var percentcomplete = n_loaded / images.length * 100;
+
+      // could put something fancier here, like a progress bar
+      // or updating text in the DOM.
+      console.log('Loaded '+percentcomplete+'% of images');
+    }
+    
+    /* search trial composition */
+    // img position function
+    function img_pos(array_size, radius, stim_size, cx, cy, jitter){      
+      var angles = _.range(0, 360, 360/array_size);  
+      var jittered_angles = _.map(angles, function(x){return x + jitter})  
+      var start_XYs = [];
+      for (var i of jittered_angles){  
+        var x = cx + (Math.cos(i/180*Math.PI)*radius);
+        var y = cy + (Math.sin(i/180*Math.PI)*radius);
+        start_XYs.push([x,y]);
+      }
+      return start_XYs
+    }    
+
+    // draw function
+    function prepare_stim(set_size, stim_pos, target_ox, target_path, nt_path, stim_size){  
+      // img position
+      var position = img_pos(8,200,84,500,400, Math.random(1)*45)
+      // merge target path and nt path
+      var stim_path = nt_path;      
+      if(target_ox==1){ 
+        stim_path = nt_path.concat(target_path);       
+      }
+      // make stim object
+      var stim=[];  
+      for (var i=0; i<set_size; i++){
+        stim.push({
+          obj_type: 'image',
+          file: stim_path[i],
+          image_width: stim_size,
+          startX: position[stim_pos[i]][0],
+          startY: position[stim_pos[i]][1]
+        })
+      }
+      stim.push({
+        obj_type: 'rect',
+        startX: 500,
+        startY: 400,
+        width: 900,
+        height: 700,
+        fill_color: '#ffffff',
+        show_end_time: 1000
+      })
+      // add central fixation
+      stim.push({
+        obj_type: 'text',
+        font: "34px Arial",
+        content: '+'
+      })   
+      return stim;
+    }    
+
+    var trial = {
+      type: jsPsychPsychophysics,
+      stimuli: function(){
+        var stim_list = prepare_stim(
+          jsPsych.timelineVariable('set_size'), jsPsych.timelineVariable('stim_position'),
+          jsPsych.timelineVariable('target_ox'), jsPsych.timelineVariable('target_path'),
+          jsPsych.timelineVariable('nt_path'), 84);
+        return stim_list;
+      },
+      choices: ['y', 'n'], 
+      canvas_width: 1000,
+      canvas_height: 800,
+      background_color: '#ffffff',
+      trial_duration: 10000,
+      data: {
+        target_present: jsPsych.timelineVariable('target_ox'),
+        config_type: jsPsych.timelineVariable('type'),        
+        config_dir: jsPsych.timelineVariable('direction'),
+        config_dim: jsPsych.timelineVariable('dimension'),
+        set_size: jsPsych.timelineVariable('set_size'),
+        disp_type: 'search_array'
+      }
+    }
+    // var fix_cross = {
+    //   obj_type: 'text',
+    //   font: "34px Arial",
+    //   content: '+'
+    // }
+    // var fixation = {
+    //   type: jsPsychPsychophysics,
+    //   stimuli: [fix_cross],
+    //   choices: "NO_KEYS",
+    //   trial_duration: 1000,
+    //   canvas_width: 1000,
+    //   canvas_height: 800,
+    //   background_color: '#ffffff',
+    //   data: {disp_type: 'iti1000'}
+    // }
+    
+    var search_main1 = {
+      timeline: [trial],
+      timeline_variables: exp_cond[0]
+    } 
+    var search_main2 = {
+      timeline: [trial],
+      timeline_variables: exp_cond[1]
+    }
+    var search_main3 = {
+      timeline: [trial],
+      timeline_variables: exp_cond[2]
+    }
+    var search_main4 = {
+      timeline: [trial],
+      timeline_variables: exp_cond[3]
+    }
+    var search_practice = {
+      timeline: [trial],
+      timeline_variables: exp_cond[_.sample([0,1,2,3])]
+    }
+    /* break */
+    var n_rounds=9;
+    for (var i=1; i<n_rounds; i++){
+      this['inter_break'+i] = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `<p style="font-size: 24px;">Round ${i} is just done! Now you have ${n_rounds-i} round(s) to go.</br>
+          Take a short break and press "B" to resume.<br>
+          You will see the target once again and then start searching.</p>`,
+        choices: ['b'],
+        data: {disp_type: 'break'}
+      }
+    }
+    
+
+    // * save data * //
+    var save_data = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '<p>You are done! Now we are saving your data. Do not leave this page yet.</p>',
+      choices: "NO_KEYS",
+      trial_duration: 3000,
+      data: { // random rotation angle saving                
+          disp_type: 'saving_display'
+      },            
+      on_finish: function(){                
+          // get data values
+          var data = {experiment:"sceneSquare_visualSearch_prolific",
+                      repo:"sceneSquare_visualSearch_prolific",                          
+                      data:jsPsych.data.get().values(),                            
+                      interaction_data:jsPsych.data.getInteractionData().values()
+                  }
+
+          // send data to savejs
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
+          xhr.setRequestHeader('Content-Type','application/json');
+          xhr.onload = function(){
+            if(xhr.status==200){
+              var response=JSON.parse(xhr.responseText);
+              console.log(response.success);
+            }
+          };
+          xhr.send(JSON.stringify(data));                              
+      }           
+    }
+
+    // * demographic page  * //
+    var gender_options = ['Male', 'Female', 'Other'];
+    var handed_option = ['Right', 'Left', 'ambidextrous'];
+    var dem_info = {
+        type: jsPsychSurveyHtmlForm,
+        preamble: '<p><b>Before starting, we would like to collect the basic information below.</b></p>',
+        html: '<p style="font-size:12pt;"> Gender: '+
+            '<input name="gender" type="radio" value="male"  required/><label for="male">Male</label>'+
+            '<input name="gender" type="radio" value="female"  required/><label for="female">Female</label>'+
+            '<input name="gender" type="radio" value="other"  required/><label for="other">Other</label></br>'+
+            // age
+            'Age: <input name="age" type="text"/></br>'+
+            // handedness
+            'Handedness: '+
+            '<input name="hand" type="radio" value="right"  required/><label for="right">Right</label>'+
+            '<input name="hand" type="radio" value="left"  required/><label for="left">Left</label>'+
+            '<input name="hand" type="radio" value="ambidextrous"  required/><label for="ambidextrous">Ambidextrous</label></br></br>'+
+            'Please respond to the following quetions by checking "Yes" or "No": </br>'+
+            // lenses
+            '</br>Do you wear corrective lenses?: '+
+            '<input name="lense" type="radio" value="yes" required/><label for="yes">Yes</label>'+
+            '<input name="lense" type="radio" value="no" required/><label for="no">No</label>'+
+            '</br>If yes, specify glasses or contacts:  <input name="lensetype" type="text" /></br>'+                
+            // hearing aids
+            '</br>Do you use hearing aid?: '+
+            '<input name="hear" type="radio" value="yes" required/><label for="yes">Yes</label>'+
+            '<input name="hear" type="radio" value="no" required/><label for="no">No</label>'+
+            '</br>If yes, please specify what kinds: <input name="hearaidtype" type="text" /></br>'+
+            // brain malfunction
+            '</br>Do you have any known brain malfunctions?: '+
+            '<input name="brain" type="radio" value="yes" required/><label for="yes">Yes</label>'+
+            '<input name="brain" type="radio" value="no" required/><label for="no">No</label>'+
+            '</br>If yes, please specify type and location: <input name="brainmaltype" type="text" /></br>'+
+            // color blindness
+            '</br>Do you experience color blindness?: '+
+            '<input name="color" type="radio" value="yes" required/><label for="yes">Yes</label>'+
+            '<input name="color" type="radio" value="no" required/><label for="no">No</label></br>'+
+            // neurological conditions
+            '</br>Do you have (or have you had) any neurological conditions?: '+
+            '<input name="neuro" type="radio" value="yes" required/><label for="yes">Yes</label>'+
+            '<input name="neuro" type="radio" value="no" required/><label for="no">No</label>'+
+            '</br>If yes, please specify type and location: <input name="neurotype" type="text" /></br></p>',
+        data: {
+            disp_type: 'demographic_info'
+        }
+    }
+    
+    // debriefing letter
+    var debrief_page = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: function(){                            
+            var html = 
+            '<p area-selected="font-size:15px;"> Thank you for participating!</p>'+      
+            '<p><a href="https://app.prolific.co/submissions/complete?cc=1C85CD1B">Click here to return to Prolific and complete the study</a>.</p>'+                
+            '<embed src="stimuli/debriefing_letter.pdf" style="width:80vw; height:70vh;"></embed>'
+            return html;
+        },
+        choices: "NO_KEYS",        
+        data: {disp_type: 'debriefing_page'}            
+    } 
+    timeline =[];
+    timeline.push(consent_page);
+    timeline.push(dem_info);
+    timeline.push({
+        type: jsPsychFullscreen,
+        fullscreen_mode: true,
+        data: {disp_type: 'fullscreen-in'}
+    });            
+    timeline.push(instruction1);
+    timeline.push(instruction2);
+    timeline.push(target_preview);
+    timeline.push(search_practice);
+    timeline.push(inter_break1);
+    timeline.push(target_preview);
+    timeline.push(search_main1);
+    timeline.push(inter_break2);
+    timeline.push(target_preview);
+    timeline.push(search_main2);
+    timeline.push(inter_break3);
+    timeline.push(target_preview);
+    timeline.push(search_main3);
+    timeline.push(inter_break4);
+    timeline.push(target_preview);
+    timeline.push(search_main4);
+    timeline.push(inter_break5);
+    timeline.push(target_preview);
+    timeline.push(search_main1);
+    timeline.push(inter_break6);
+    timeline.push(target_preview);
+    timeline.push(search_main2);
+    timeline.push(inter_break7);
+    timeline.push(target_preview);
+    timeline.push(search_main3);
+    timeline.push(inter_break8);
+    timeline.push(target_preview);
+    timeline.push(search_main4);
+    timeline.push(save_data);
+    timeline.push({
+      type: jsPsychFullscreen,
+      fullscreen_mode: false,
+      data: {disp_type: 'fullscreen-out'}
+    });
+    timeline.push(debrief_page);
+
+    function startExperiment(){
+      jsPsych.run(timeline);
+    }
+  </script>
+</html>
