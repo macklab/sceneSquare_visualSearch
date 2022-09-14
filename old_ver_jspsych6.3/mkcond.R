@@ -21,7 +21,7 @@ for(dist in distance){
     nt1 <- round(sqrt(dist*dist/2))*dir
     for(dim in dimension){ # dim=1: +45deg, dim=-1: -45deg
       for(s in set_size){
-        # get jitter distractors
+        # get jittered distractors
         nt_coords=c()
         for(ss in seq(1,s)){
           if(dim==-1){
@@ -226,7 +226,4 @@ condition <- rbind(
 colnames(condition)[1] <- "type" 
 condition <- as.data.frame(condition) 
 
-library(rjson)
-x <- toJSON(unname(split(condition, 1:nrow(condition))))
-write(x,'~/Documents/GitHub/sceneSquare_visualSearch/pilot_condition.json')
 
