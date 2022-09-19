@@ -61,9 +61,9 @@
     var exp_cond = make_condition(cond_list, jitter, target_coord, n_block, stim_dir, position_idx);   
     
     // * Prolific information * //
-    var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
-    var study_id = jsPsych.data.getURLVariable('STUDY_ID');
-    var session_id = jsPsych.data.getURLVariable('SESSION_ID');
+    var subject_id = 0;//jsPsych.data.getURLVariable('PROLIFIC_PID');
+    var study_id = 0;//jsPsych.data.getURLVariable('STUDY_ID');
+    var session_id = 0;//jsPsych.data.getURLVariable('SESSION_ID');
     jsPsych.data.addProperties({
         subject_id: subject_id,
         study_id: study_id,
