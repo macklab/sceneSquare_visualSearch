@@ -19,27 +19,32 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"></script>
   </head>
   <body></body>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
   
-  <script type="text/javascript">
-    // Firebase set up
+    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyB7oPkNBYl-J7EdtN09rz_bH_SC1_TIBGw",
       authDomain: "scenevs.firebaseapp.com",
-      databaseURL: "https://scenevs-default-rtdb.firebaseio.com",
       projectId: "scenevs",
       storageBucket: "scenevs.appspot.com",
       messagingSenderId: "126723681401",
       appId: "1:126723681401:web:bad519761de4fe550638a8"
     };
+  
     // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
 
     // login anonymous user
     firebase.auth().signInAnonymously().catch(function(error) {
         var errorCode = error.code;
         var errorMessage = error.message;
-    });
-  </script>
+  </script> 
+  
 
   <script>
 
