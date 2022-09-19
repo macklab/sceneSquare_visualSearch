@@ -14,8 +14,32 @@
     <script src="make_condition.js"></script>
     <script src="jspsych-psychophysics.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.2/underscore-min.js" integrity="sha512-anTuWy6G+usqNI0z/BduDtGWMZLGieuJffU89wUU7zwY/JhmDzFrfIZFA3PY7CEX4qxmn3QXRoXysk6NBh5muQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-database.js"></script>    
   </head>
   <body></body>
+
+  <script type="text/javascript">
+    // Firebase set up
+    var firebaseConfig = {
+        apiKey: "AIzaSyBB0wgVCYlPXiVfL6_o8BLKIFZKQhzsclY",
+        authDomain: "scene-categorybias.firebaseapp.com",
+        projectId: "scene-categorybias",
+        storageBucket: "scene-categorybias.appspot.com",
+        messagingSenderId: "714487112899",
+        appId: "1:714487112899:web:e9ac2772850fe4c8766e76"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // login anonymous user
+    firebase.auth().signInAnonymously().catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+    });      
+  </script>
+
   <script>
 
     const jsPsych = initJsPsych();    
@@ -238,24 +262,36 @@
           disp_type: 'saving_display'
       },            
       on_finish: function(){                
-          // get data values
-          var data = {experiment:"sceneSquare_visualSearch_prolific",
-                      repo:"sceneSquare_visualSearch_prolific",                          
-                      data:jsPsych.data.get().values(),                            
-                      interaction_data:jsPsych.data.getInteractionData().values()
-                  }
+          // // get data values
+          // var data = {experiment:"sceneSquare_visualSearch_prolific",
+          //             repo:"sceneSquare_visualSearch_prolific",                          
+          //             data:jsPsych.data.get().values(),                            
+          //             interaction_data:jsPsych.data.getInteractionData().values()
+          //         }
 
-          // send data to savejs
-          var xhr = new XMLHttpRequest();
-          xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
-          xhr.setRequestHeader('Content-Type','application/json');
-          xhr.onload = function(){
-            if(xhr.status==200){
-              var response=JSON.parse(xhr.responseText);
-              console.log(response.success);
-            }
-          };
-          xhr.send(JSON.stringify(data));                              
+          // // send data to savejs
+          // var xhr = new XMLHttpRequest();
+          // xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
+          // xhr.setRequestHeader('Content-Type','application/json');
+          // xhr.onload = function(){
+          //   if(xhr.status==200){
+          //     var response=JSON.parse(xhr.responseText);
+          //     console.log(response.success);
+          //   }
+          // };
+          // xhr.send(JSON.stringify(data));
+
+          // send data to firebase!                                 
+          var tmp = new Uint32Array(1);
+          tmp = window.crypto.getRandomValues(tmp)
+          var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
+          firebase.database().ref(dbpath).set({
+            experiment:"sceneSquare_visualSearch_prolific",
+            repo:"sceneSquare_visualSearch_prolific",                          
+            data:jsPsych.data.get().values(),                            
+            interaction_data:jsPsych.data.getInteractionData().values(),
+            date: Date()
+          });                          
       }           
     }
 
