@@ -261,7 +261,8 @@
       data: { // random rotation angle saving                
           disp_type: 'saving_display'
       },            
-      on_finish: function(){                
+      on_finish: function(){  
+        jsPsych.data.displayData()             
           // // get data values
           // var data = {experiment:"sceneSquare_visualSearch_prolific",
           //             repo:"sceneSquare_visualSearch_prolific",                          
@@ -285,9 +286,7 @@
           var tmp = new Uint32Array(1);
           tmp = window.crypto.getRandomValues(tmp)
           var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
-          firebase.database().ref(dbpath).set({
-            experiment:"sceneSquare_visualSearch_prolific",
-            repo:"sceneSquare_visualSearch_prolific",                          
+          firebase.database().ref(dbpath).set({                          
             data:jsPsych.data.get().values(),                            
             interaction_data:jsPsych.data.getInteractionData().values(),
             date: Date()
